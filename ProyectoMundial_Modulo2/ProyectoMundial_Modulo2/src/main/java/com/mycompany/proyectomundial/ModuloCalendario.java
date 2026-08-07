@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.proyectomundial;
-
+//s
 import java.util.Random;
 import javax.swing.JOptionPane;
 
