@@ -43,8 +43,7 @@ public class ProyectoMundial {
                     capacidad = 0;
                     JOptionPane.showMessageDialog(null, "Opción no válida.");
             }
-        } while (capacidad != 24 && capacidad != 32
-                && capacidad != 48 && capacidad != 64);
+        } while(capacidad != 24 && capacidad != 32 && capacidad != 48 && capacidad != 64);
 
         Equipo equipos[] = new Equipo[capacidad];
         CuerpoArbitral arbitros[]= new CuerpoArbitral[30];
