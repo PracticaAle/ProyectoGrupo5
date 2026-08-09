@@ -86,7 +86,7 @@ public class ProyectoMundial {
                     + "16. Mostrar partidos por grupo\n"
                     + "17. Simular siguiente partido\n"
                     + "18. Simular fase completa\n"
-                    + "\n===== MÓDULO 5 =====\n" 
+                    + "\n===== MÓDULO 4 =====\n" 
                     + "19. Mostrar equipos clasificados\n" 
                     + "20. Crear llaves de eliminación\n" 
                     + "21. Simular siguiente partido eliminatorio\n" 
