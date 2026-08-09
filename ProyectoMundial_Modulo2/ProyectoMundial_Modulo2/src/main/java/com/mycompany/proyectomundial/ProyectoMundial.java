@@ -86,7 +86,13 @@ public class ProyectoMundial {
                     + "16. Mostrar partidos por grupo\n"
                     + "17. Simular siguiente partido\n"
                     + "18. Simular fase completa\n"
-                    + "19. Salir\n"
+                    + "\n===== MÓDULO 5 =====\n" 
+                    + "19. Mostrar equipos clasificados\n" 
+                    + "20. Crear llaves de eliminación\n" 
+                    + "21. Simular siguiente partido eliminatorio\n" 
+                    + "22. Simular fase eliminatoria completa\n" 
+                    + "23. Mostrar bracket\n"
+                    + "24. Salir\n"
                     + "Seleccione una opción:"));
 
             switch (opcion) {
@@ -177,14 +183,34 @@ public class ProyectoMundial {
                     ModuloCalendario.simularFaseCompleta(calendario);
                     break;
 
-                case 19:
-                    JOptionPane.showMessageDialog(null, "Saliendo del sistema...");
+                case 19: 
+                    Eliminacion.mostrarClasificados( grupos, capacidad ); 
+                    break; 
+                
+                case 20: 
+                    Eliminacion.crearLlaves( grupos, capacidad ); 
+                    break; 
+                
+                case 21: 
+                    Eliminacion.simularSiguientePartido(); 
+                    break; 
+                
+                case 22: 
+                    Eliminacion.simularFaseEliminatoriaCompleta(); 
+                    break; 
+                
+                case 23: 
+                    Eliminacion.mostrarBracket(); 
+                    break; 
+                
+                case 24: 
+                    JOptionPane.showMessageDialog( null, "Saliendo del sistema..." ); 
                     break;
 
                 default:
                     JOptionPane.showMessageDialog(null, "Opción no válida.");
             }
 
-        } while (opcion != 19);
+        } while (opcion != 24);
     }
 }
