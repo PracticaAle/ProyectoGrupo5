@@ -573,6 +573,78 @@ public class Eliminacion {
     }
 
     /**
+     * Retorna el partido final del torneo.
+     * @return
+     */
+    public static Partido obtenerFinal() {
+
+        if (finalPartido == null || finalPartido.length == 0) {
+            return null;
+        }
+
+        return finalPartido[0];
+    }
+
+    /**
+     * Retorna todos los partidos eliminatorios en un solo arreglo.
+     * @return
+     */
+    public static Partido[] obtenerPartidosEliminacion() {
+
+        int total = contarPartidos(ronda32)
+                + contarPartidos(octavos)
+                + contarPartidos(cuartos)
+                + contarPartidos(semifinales)
+                + contarPartidos(finalPartido);
+
+        Partido[] partidos = new Partido[total];
+        int posicion = 0;
+
+        posicion = copiarPartidos(ronda32, partidos, posicion);
+        posicion = copiarPartidos(octavos, partidos, posicion);
+        posicion = copiarPartidos(cuartos, partidos, posicion);
+        posicion = copiarPartidos(semifinales, partidos, posicion);
+        copiarPartidos(finalPartido, partidos, posicion);
+
+        return partidos;
+    }
+
+    /**
+     * Cuenta los partidos de una ronda.
+     * @param ronda
+     * @return
+     */
+    private static int contarPartidos(Partido[] ronda) {
+
+        if (ronda == null) {
+            return 0;
+        }
+
+        return ronda.length;
+    }
+
+    /**
+     * Copia partidos de una ronda dentro de un arreglo destino.
+     * @param origen
+     * @param destino
+     * @param posicion
+     * @return
+     */
+    private static int copiarPartidos(Partido[] origen, Partido[] destino, int posicion) {
+
+        if (origen == null) {
+            return posicion;
+        }
+
+        for (int i = 0; i < origen.length; i++) {
+            destino[posicion] = origen[i];
+            posicion++;
+        }
+
+        return posicion;
+    }
+
+    /**
      * Crea una copia del arreglo "equipos" para no alterar el arreglo original.
      * @param equipos
      * @return 
