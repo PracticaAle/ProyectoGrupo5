@@ -3,226 +3,145 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.proyectomundial;
-//s
-import java.util.Random;
+
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author usuario
- */
-public class ModuloCalendario {
+public class ModuloEstadisticasFinales {
 
-    /**
-     * Este metodo genera partidos grupo por grupo y les asigna arbitro y sede
-     * automaticamente
-     *
-     * @param grupos
-     * @return
-     */
-    public static Partido[] generarCalendarioGrupos(Grupo grupos[], Sede sedes[], CuerpoArbitral arbitros[]) {
+    public static boolean torneoFinalizado() {
+        Partido finalTorneo = Eliminacion.obtenerFinal();
 
-        //Verificar primero que hayan grupos ya creados
-        if (grupos == null) {
-            JOptionPane.showMessageDialog(null, "Primero debe generar los grupos.");
+        return finalTorneo != null
+                && finalTorneo.isJugado()
+                && Eliminacion.campeon != null;
+    }
 
-            //finalizar el metodo de no haber grupos creados
-            return null;
+    public static boolean validarSimulacionPermitida() {
+        if (torneoFinalizado()) {
+            JOptionPane.showMessageDialog(null,
+                    "El torneo ya finalizo.\nNo se permiten simulaciones adicionales.");
+            return false;
+        }
+        return true;
+    }
+
+    public static void mostrarResumenFinal(Equipo[] equipos, Partido[] calendario) {
+        Partido finalTorneo = Eliminacion.obtenerFinal();
+
+        if (finalTorneo == null || !finalTorneo.isJugado() || Eliminacion.campeon == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Primero debe finalizar el ultimo partido de la fase eliminatoria.");
+            return;
         }
 
-        //Cada grupo tendra 6 partidos
-        Partido calendario[] = new Partido[grupos.length * 6];
+        Equipo campeon = Eliminacion.campeon;
+        Equipo subcampeon;
 
-        //Posicion de cada partido
-        int posicion = 0;
+        if (finalTorneo.getGanador() == finalTorneo.getEquipoLocal()) {
+            subcampeon = finalTorneo.getEquipoVisitante();
+        } else {
+            subcampeon = finalTorneo.getEquipoLocal();
+        }
 
-        //Recorrer grupos
-        for (int i = 0; i < grupos.length; i++) {
+        String mensaje = "===== RESUMEN FINAL DEL TORNEO =====\n\n";
+        mensaje += "CAMPEON DEL MUNDO: " + campeon.getNombre() + "\n";
+        mensaje += "SUBCAMPEON: " + subcampeon.getNombre() + "\n\n";
 
-            //obtener los equipos de cada grupo
-            Equipo equipos[] = grupos[i].getEquipos();
+        mensaje += obtenerTopGoleadores(equipos);
+        mensaje += "\n" + obtenerReporteDisciplinario(equipos);
+        mensaje += "\n" + obtenerResumenFinanciero(calendario, Eliminacion.obtenerPartidosEliminacion());
 
-            //primer equipo
-            for (int j = 0; j < equipos.length; j++) {
+        JOptionPane.showMessageDialog(null, mensaje);
+    }
 
-                //j+1 pq sino se hacen partidos repetidos
-                for (int k = j + 1; k < equipos.length; k++) {
+    private static String obtenerTopGoleadores(Equipo[] equipos) {
+        Jugador[] top = new Jugador[5];
+        String[] paises = new String[5];
 
-                    calendario[posicion] = new Partido(equipos[j], equipos[k]);
+        for (int i = 0; i < equipos.length; i++) {
+            if (equipos[i] != null) {
+                Jugador[] jugadores = equipos[i].getJugadores();
 
-                    posicion = posicion + 1;
+                for (int j = 0; j < jugadores.length; j++) {
+                    Jugador jugador = jugadores[j];
+
+                    for (int k = 0; k < top.length; k++) {
+                        if (top[k] == null || jugador.getGoles() > top[k].getGoles()) {
+                            for (int m = top.length - 1; m > k; m--) {
+                                top[m] = top[m - 1];
+                                paises[m] = paises[m - 1];
+                            }
+
+                            top[k] = jugador;
+                            paises[k] = equipos[i].getNombre();
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        //Asignar sedes y arbitros de una
-        asignarArbitrosAleatorios(calendario, arbitros);
-        asignarSedesCalendario(calendario, sedes);
+        String texto = "===== TOP 5 GOLEADORES =====\n";
 
-        JOptionPane.showMessageDialog(null, "Calendario generado correctamente");
-
-        return calendario;
-    }
-
-
-    /**
-     * Asigna la sede a los partidos
-     *
-     * @param calendario
-     * @param sedes
-     */
-    public static void asignarSedesCalendario(Partido calendario[], Sede sedes[]) {
-
-        if (calendario == null) {
-            JOptionPane.showMessageDialog(null, "Genere primero el calendario");
-            return;
-        }
-
-        //Ver si ya hay sedes
-        if (sedes == null || sedes.length == 0) {
-            JOptionPane.showMessageDialog(null, "Primero registre las sedes");
-            return;
-        }
-
-        int posicionSede = 0;
-
-        for (int i = 0; i < calendario.length; i++) {
-
-            //Asignar sede
-            calendario[i].setSede(sedes[posicionSede]);
-
-            posicionSede++;
-
-            //Si llega al final del arreglo de sedes vuelve al inicio
-            if (posicionSede == sedes.length) {
-                posicionSede = 0;
-            }
-        }
-    }
-
-
-    /**
-     * Asigna arbitro a cada partido
-     *
-     * @param calendario
-     * @param arbitros
-     */
-    public static void asignarArbitrosAleatorios(Partido calendario[], CuerpoArbitral arbitros[]) {
-
-        if (calendario == null) {
-            JOptionPane.showMessageDialog(null, "Primero genere el calendario");
-            return;
-        }
-
-        if (arbitros.length == 0) {
-            JOptionPane.showMessageDialog(null, "Registre primero los arbitros del torneo");
-            return;
-        }
-
-        Random aleatorio = new Random();
-
-        for (int i = 0; i < calendario.length; i++) {
-
-            int posicionRandom = aleatorio.nextInt(arbitros.length);
-
-            calendario[i].setArbitroAsignado(arbitros[posicionRandom]);
-        }
-    }
-
-
-    /**
-     * Muestra los partidos que le va a tocar a cada grupo
-     *
-     * @param calendario
-     * @param grupos
-     */
-    public static void mostrarPartidosPorGrupo(Partido calendario[], Grupo grupos[]) {
-
-        //verificar que se haya creado el calendario
-        if (calendario == null) {
-            JOptionPane.showMessageDialog(null, "Primero debe generar los partidos.");
-            return;
-        }
-
-        int posicion = 0;
-
-        //Recorrer grupos
-        for (int i = 0; i < grupos.length; i++) {
-
-            String mensajeGrupo = "=======" + grupos[i].getNombreGrupo() + "=======";
-
-            //Ahora sus 6 partidos
-            for (int j = 0; j < 6; j++) {
-
-                Partido partido = calendario[posicion];
-
-                mensajeGrupo += "\n" + j + ". "
-                        + partido.getEquipoLocal().getNombre()
-                        + " vs "
-                        + partido.getEquipoVisitante().getNombre()
-                        + "\n";
-
-                posicion++;
-            }
-
-            JOptionPane.showMessageDialog(null, mensajeGrupo);
-        }
-    }
-
-
-    /**
-     * Obtiene el siguiente partido que no haya sido jugado
-     *
-     * @param calendario
-     * @return
-     */
-    public static Partido obtenerSiguientePartido(Partido calendario[]) {
-
-        if (calendario == null) {
-            JOptionPane.showMessageDialog(null, "Genere el calendario primero");
-            return null;
-        }
-
-        for (int i = 0; i < calendario.length; i++) {
-
-            //Almacena partido actual
-            Partido partido = calendario[i];
-
-            //verificar si el partido ya se jugo
-            if (partido.isJugado() == false) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Siguiente partido: \n"
-                        + partido.getEquipoLocal().getNombre()
-                        + "\nvs \n"
-                        + partido.getEquipoVisitante().getNombre()
-                );
-
-                return partido;
+        for (int i = 0; i < top.length; i++) {
+            if (top[i] != null) {
+                texto += (i + 1) + ". " + top[i].getNombre()
+                        + " | Pais: " + paises[i]
+                        + " | Goles: " + top[i].getGoles() + "\n";
             }
         }
 
-        JOptionPane.showMessageDialog(null, "Ya no quedaron partidos pendientes");
-
-        return null;
+        return texto;
     }
 
+    private static String obtenerReporteDisciplinario(Equipo[] equipos) {
+        String texto = "===== REPORTE DISCIPLINARIO =====\n";
 
-    /**
-     * Este metodo simula un solo partido y muestra los resultados
-     *
-     * @param partido
-     * @param mostrarResultado
-     */
-    public static void simularPartidoAPartido(Partido partido, boolean mostrarResultado) {
+        for (int i = 0; i < equipos.length; i++) {
+            if (equipos[i] != null) {
+                Jugador[] jugadores = equipos[i].getJugadores();
 
-        if (partido == null) {
-            JOptionPane.showMessageDialog(null, "No hay partido por simular");
-            return;
+                for (int j = 0; j < jugadores.length; j++) {
+                    if (jugadores[j].getTarjetasRojas() > 0 || jugadores[j].getTarjetasAmarillas() > 0) {
+                        texto += jugadores[j].getNombre()
+                                + " | Pais: " + equipos[i].getNombre()
+                                + " | Amarillas: " + jugadores[j].getTarjetasAmarillas()
+                                + " | Rojas: " + jugadores[j].getTarjetasRojas()
+                                + " | Total: "
+                                + (jugadores[j].getTarjetasAmarillas() + jugadores[j].getTarjetasRojas())
+                                + "\n";
+                    }
+                }
+            }
         }
 
-        if (partido.isJugado() == true) {
-            JOptionPane.showMessageDialog(null, "Este partido ya fue jugado");
-            return;
+        return texto;
+    }
+
+    private static String obtenerResumenFinanciero(Partido[] calendario, Partido[] eliminacion) {
+        int partidos = 0;
+        int asistencia = 0;
+        double recaudacion = 0;
+
+        for (int i = 0; calendario != null && i < calendario.length; i++) {
+            if (calendario[i] != null && calendario[i].isJugado()) {
+                partidos++;
+                asistencia += calendario[i].getAsistencia();
+                recaudacion += calendario[i].getRecaudacion();
+            }
         }
+
+        for (int i = 0; eliminacion != null && i < eliminacion.length; i++) {
+            if (eliminacion[i] != null && eliminacion[i].isJugado()) {
+                partidos++;
+                asistencia += eliminacion[i].getAsistencia();
+                recaudacion += eliminacion[i].getRecaudacion();
+            }
+        }
+
+        return "===== RESUMEN FINANCIERO Y ASISTENCIA =====\n"
+                + "Partidos jugados: " + partidos + "\n"
+                + "Asistencia total: " + asistencia + "\n"
+                + "Recaudacion total: $" + recaudacion + "\n";
+    }
+}
