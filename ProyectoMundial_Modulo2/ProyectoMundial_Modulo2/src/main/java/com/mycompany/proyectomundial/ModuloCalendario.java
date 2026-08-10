@@ -276,6 +276,8 @@ public class ModuloCalendario {
 
         //Actualizar tabla de grupo
         calcularPuntos(partido);
+        //Registrar asistencia y recaudacion
+        ModuloEstadisticasFinales.registrarMetricasComerciales(partido);
 
         //Partido ya jugado
         partido.setJugado(true);
