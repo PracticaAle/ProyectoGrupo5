@@ -1,1 +1,147 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.proyectomundial;
 
+import javax.swing.JOptionPane;
+
+public class ModuloEstadisticasFinales {
+
+    public static boolean torneoFinalizado() {
+        Partido finalTorneo = Eliminacion.obtenerFinal();
+
+        return finalTorneo != null
+                && finalTorneo.isJugado()
+                && Eliminacion.campeon != null;
+    }
+
+    public static boolean validarSimulacionPermitida() {
+        if (torneoFinalizado()) {
+            JOptionPane.showMessageDialog(null,
+                    "El torneo ya finalizo.\nNo se permiten simulaciones adicionales.");
+            return false;
+        }
+        return true;
+    }
+
+    public static void mostrarResumenFinal(Equipo[] equipos, Partido[] calendario) {
+        Partido finalTorneo = Eliminacion.obtenerFinal();
+
+        if (finalTorneo == null || !finalTorneo.isJugado() || Eliminacion.campeon == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Primero debe finalizar el ultimo partido de la fase eliminatoria.");
+            return;
+        }
+
+        Equipo campeon = Eliminacion.campeon;
+        Equipo subcampeon;
+
+        if (finalTorneo.getGanador() == finalTorneo.getEquipoLocal()) {
+            subcampeon = finalTorneo.getEquipoVisitante();
+        } else {
+            subcampeon = finalTorneo.getEquipoLocal();
+        }
+
+        String mensaje = "===== RESUMEN FINAL DEL TORNEO =====\n\n";
+        mensaje += "CAMPEON DEL MUNDO: " + campeon.getNombre() + "\n";
+        mensaje += "SUBCAMPEON: " + subcampeon.getNombre() + "\n\n";
+
+        mensaje += obtenerTopGoleadores(equipos);
+        mensaje += "\n" + obtenerReporteDisciplinario(equipos);
+        mensaje += "\n" + obtenerResumenFinanciero(calendario, Eliminacion.obtenerPartidosEliminacion());
+
+        JOptionPane.showMessageDialog(null, mensaje);
+    }
+
+    private static String obtenerTopGoleadores(Equipo[] equipos) {
+        Jugador[] top = new Jugador[5];
+        String[] paises = new String[5];
+
+        for (int i = 0; i < equipos.length; i++) {
+            if (equipos[i] != null) {
+                Jugador[] jugadores = equipos[i].getJugadores();
+
+                for (int j = 0; j < jugadores.length; j++) {
+                    Jugador jugador = jugadores[j];
+
+                    for (int k = 0; k < top.length; k++) {
+                        if (top[k] == null || jugador.getGoles() > top[k].getGoles()) {
+                            for (int m = top.length - 1; m > k; m--) {
+                                top[m] = top[m - 1];
+                                paises[m] = paises[m - 1];
+                            }
+
+                            top[k] = jugador;
+                            paises[k] = equipos[i].getNombre();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        String texto = "===== TOP 5 GOLEADORES =====\n";
+
+        for (int i = 0; i < top.length; i++) {
+            if (top[i] != null) {
+                texto += (i + 1) + ". " + top[i].getNombre()
+                        + " | Pais: " + paises[i]
+                        + " | Goles: " + top[i].getGoles() + "\n";
+            }
+        }
+
+        return texto;
+    }
+
+    private static String obtenerReporteDisciplinario(Equipo[] equipos) {
+        String texto = "===== REPORTE DISCIPLINARIO =====\n";
+
+        for (int i = 0; i < equipos.length; i++) {
+            if (equipos[i] != null) {
+                Jugador[] jugadores = equipos[i].getJugadores();
+
+                for (int j = 0; j < jugadores.length; j++) {
+                    if (jugadores[j].getTarjetasRojas() > 0 || jugadores[j].getTarjetasAmarillas() > 0) {
+                        texto += jugadores[j].getNombre()
+                                + " | Pais: " + equipos[i].getNombre()
+                                + " | Amarillas: " + jugadores[j].getTarjetasAmarillas()
+                                + " | Rojas: " + jugadores[j].getTarjetasRojas()
+                                + " | Total: "
+                                + (jugadores[j].getTarjetasAmarillas() + jugadores[j].getTarjetasRojas())
+                                + "\n";
+                    }
+                }
+            }
+        }
+
+        return texto;
+    }
+
+    private static String obtenerResumenFinanciero(Partido[] calendario, Partido[] eliminacion) {
+        int partidos = 0;
+        int asistencia = 0;
+        double recaudacion = 0;
+
+        for (int i = 0; calendario != null && i < calendario.length; i++) {
+            if (calendario[i] != null && calendario[i].isJugado()) {
+                partidos++;
+                asistencia += calendario[i].getAsistencia();
+                recaudacion += calendario[i].getRecaudacion();
+            }
+        }
+
+        for (int i = 0; eliminacion != null && i < eliminacion.length; i++) {
+            if (eliminacion[i] != null && eliminacion[i].isJugado()) {
+                partidos++;
+                asistencia += eliminacion[i].getAsistencia();
+                recaudacion += eliminacion[i].getRecaudacion();
+            }
+        }
+
+        return "===== RESUMEN FINANCIERO Y ASISTENCIA =====\n"
+                + "Partidos jugados: " + partidos + "\n"
+                + "Asistencia total: " + asistencia + "\n"
+                + "Recaudacion total: $" + recaudacion + "\n";
+    }
+}
