@@ -92,7 +92,9 @@ public class ProyectoMundial {
                     + "21. Simular siguiente partido eliminatorio\n" 
                     + "22. Simular fase eliminatoria completa\n" 
                     + "23. Mostrar bracket\n"
-                    + "24. Salir\n"
+                    + "\n===== MÓDULO 6 =====\n"
+                    + "24. Mostrar resumen final del torneo\n"
+                    + "25. Salir\n"
                     + "Seleccione una opción:"));
 
             switch (opcion) {
@@ -203,14 +205,18 @@ public class ProyectoMundial {
                     Eliminacion.mostrarBracket(); 
                     break; 
                 
-                case 24: 
-                    JOptionPane.showMessageDialog( null, "Saliendo del sistema..." ); 
+                  case 24:
+                    ModuloEstadisticasFinales.mostrarResumenFinal(equipos, calendario);
+                    break;
+
+                case 25:
+                    JOptionPane.showMessageDialog(null, "Saliendo del sistema...");
                     break;
 
                 default:
                     JOptionPane.showMessageDialog(null, "Opción no válida.");
             }
 
-        } while (opcion != 24);
+        } while (opcion != 25);
     }
 }
