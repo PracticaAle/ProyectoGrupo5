@@ -128,7 +128,7 @@ public class ModuloEstadisticasFinales {
      * @param finalTorneo
      * @return
      */
-    private static Equipo obtenerSubcampeon(Partido finalTorneo) {
+    public static Equipo obtenerSubcampeon(Partido finalTorneo) {
 
         if (finalTorneo.getGanador() == finalTorneo.getEquipoLocal()) {
             return finalTorneo.getEquipoVisitante();
@@ -146,7 +146,7 @@ public class ModuloEstadisticasFinales {
      * @param equipos
      * @return
      */
-    private static String generarTablaGoleadores(Equipo[] equipos) {
+    public static String generarTablaGoleadores(Equipo[] equipos) {
 
         Jugador[] mejores = new Jugador[5];
         String[] paises = new String[5];
@@ -222,7 +222,7 @@ public class ModuloEstadisticasFinales {
      * @param equipos
      * @return
      */
-    private static String generarReporteDisciplinario(Equipo[] equipos) {
+    public static String generarReporteDisciplinario(Equipo[] equipos) {
 
         int mayorAmarillas = obtenerMayorAmarillas(equipos);
         int cantidadInfractores = contarInfractores(equipos, mayorAmarillas);
@@ -409,7 +409,7 @@ public class ModuloEstadisticasFinales {
      * @param calendario
      * @return
      */
-    private static String generarResumenFinanciero(Partido[] calendario) {
+    public static String generarResumenFinanciero(Partido[] calendario) {
 
         Partido[] eliminacion = Eliminacion.obtenerPartidosEliminacion();
 
@@ -442,7 +442,7 @@ public class ModuloEstadisticasFinales {
      * @param partidos
      * @return
      */
-    private static int contarPartidosJugados(Partido[] partidos) {
+    public static int contarPartidosJugados(Partido[] partidos) {
 
         int total = 0;
 
