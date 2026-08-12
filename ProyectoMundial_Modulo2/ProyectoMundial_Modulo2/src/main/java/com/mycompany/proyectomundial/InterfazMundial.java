@@ -1108,161 +1108,18 @@ public class InterfazMundial extends JFrame {
         Partido finalTorneo = Eliminacion.obtenerFinal();
 
         if (finalTorneo != null && finalTorneo.getGanador() != null) {
-            Equipo subcampeon = obtenerSubcampeon(finalTorneo);
+            Equipo subcampeon = ModuloEstadisticasFinales.obtenerSubcampeon(finalTorneo);
 
             if (subcampeon != null) {
                 texto += "SUBCAMPEON: " + subcampeon.getNombre() + "\n";
             }
         }
 
-        texto += "\n" + generarTopGoleadores();
-        texto += "\n" + generarReporteDisciplinario();
-        texto += "\n" + generarResumenFinanciero();
+        texto += "\n" + ModuloEstadisticasFinales.generarTablaGoleadores(equipos);
+        texto += "\n" + ModuloEstadisticasFinales.generarReporteDisciplinario(equipos);
+        texto += "\n" + ModuloEstadisticasFinales.generarResumenFinanciero(calendario);
 
         return texto;
-    }
-
-    /**
-     * Obtiene el equipo que perdio la final.
-     */
-    private Equipo obtenerSubcampeon(Partido finalTorneo) {
-        if (finalTorneo.getGanador() == finalTorneo.getEquipoLocal()) {
-            return finalTorneo.getEquipoVisitante();
-        }
-
-        if (finalTorneo.getGanador() == finalTorneo.getEquipoVisitante()) {
-            return finalTorneo.getEquipoLocal();
-        }
-
-        return null;
-    }
-
-    /**
-     * Genera el Top 5 de goleadores.
-     */
-    private String generarTopGoleadores() {
-        Jugador[] mejores = new Jugador[5];
-        String[] paises = new String[5];
-
-        for (int i = 0; i < equipos.length; i++) {
-            if (equipos[i] != null && equipos[i].getJugadores() != null) {
-                Jugador[] jugadores = equipos[i].getJugadores();
-
-                for (int j = 0; j < jugadores.length; j++) {
-                    insertarGoleador(mejores, paises, jugadores[j], equipos[i].getNombre());
-                }
-            }
-        }
-
-        String texto = "===== TOP 5 GOLEADORES =====\n";
-
-        for (int i = 0; i < mejores.length; i++) {
-            if (mejores[i] != null) {
-                texto += (i + 1)
-                        + ". "
-                        + ajustarTexto(mejores[i].getNombre(), 30)
-                        + " Pais: "
-                        + ajustarTexto(paises[i], 14)
-                        + " Goles: "
-                        + mejores[i].getGoles()
-                        + "\n";
-            }
-        }
-
-        if (mejores[0] == null) {
-            texto += "No hay goles registrados.\n";
-        }
-
-        return texto;
-    }
-
-    /**
-     * Inserta un jugador dentro del Top 5 si tiene mas goles.
-     */
-    private void insertarGoleador(Jugador[] mejores, String[] paises, Jugador jugador, String pais) {
-        if (jugador == null) {
-            return;
-        }
-
-        for (int i = 0; i < mejores.length; i++) {
-            if (mejores[i] == null || jugador.getGoles() > mejores[i].getGoles()) {
-                for (int j = mejores.length - 1; j > i; j--) {
-                    mejores[j] = mejores[j - 1];
-                    paises[j] = paises[j - 1];
-                }
-
-                mejores[i] = jugador;
-                paises[i] = pais;
-                return;
-            }
-        }
-    }
-
-    /**
-     * Genera el reporte de tarjetas.
-     */
-    private String generarReporteDisciplinario() {
-        String texto = "===== REPORTE DISCIPLINARIO =====\n";
-        int encontrados = 0;
-
-        for (int i = 0; i < equipos.length; i++) {
-            if (equipos[i] != null && equipos[i].getJugadores() != null) {
-                Jugador[] jugadores = equipos[i].getJugadores();
-
-                for (int j = 0; j < jugadores.length; j++) {
-                    int amarillas = jugadores[j].getTarjetasAmarillas();
-                    int rojas = jugadores[j].getTarjetasRojas();
-
-                    if (amarillas > 0 || rojas > 0) {
-                        texto += jugadores[j].getNombre()
-                                + " | Pais: "
-                                + equipos[i].getNombre()
-                                + " | Amarillas: "
-                                + amarillas
-                                + " | Rojas: "
-                                + rojas
-                                + " | Total: "
-                                + (amarillas + rojas)
-                                + "\n";
-
-                        encontrados++;
-                    }
-                }
-            }
-        }
-
-        if (encontrados == 0) {
-            texto += "No hay incidencias registradas.\n";
-        }
-
-        return texto;
-    }
-
-    /**
-     * Genera el resumen de asistencia y recaudacion.
-     */
-    private String generarResumenFinanciero() {
-        Partido[] eliminacion = null;
-
-        if (llavesCreadas) {
-            eliminacion = Eliminacion.obtenerPartidosEliminacion();
-        }
-
-        int partidos = contarPartidosJugados(calendario) + contarPartidosJugados(eliminacion);
-        int asistencia = sumarAsistencia(calendario) + sumarAsistencia(eliminacion);
-        double recaudacion = sumarRecaudacion(calendario) + sumarRecaudacion(eliminacion);
-
-        int promedio = 0;
-
-        if (partidos > 0) {
-            promedio = asistencia / partidos;
-        }
-
-        return "===== FINANZAS Y ASISTENCIA =====\n"
-                + "Partidos jugados: " + partidos + "\n"
-                + "Asistencia total: " + asistencia + "\n"
-                + "Promedio por partido: " + promedio + "\n"
-                + "Recaudacion total: $" + String.format("%.2f", recaudacion) + "\n";
     }
 
     /**
@@ -1277,10 +1134,10 @@ public class InterfazMundial extends JFrame {
             gruposValor.setText(String.valueOf(grupos.length));
         }
 
-        int partidosJugados = contarPartidosJugados(calendario);
+        int partidosJugados = ModuloEstadisticasFinales.contarPartidosJugados(calendario);
 
         if (llavesCreadas) {
-            partidosJugados += contarPartidosJugados(Eliminacion.obtenerPartidosEliminacion());
+            partidosJugados += ModuloEstadisticasFinales.contarPartidosJugados(Eliminacion.obtenerPartidosEliminacion());
         }
 
         partidosValor.setText(String.valueOf(partidosJugados));
@@ -1331,63 +1188,6 @@ public class InterfazMundial extends JFrame {
         for (int i = 0; i < sedes.length; i++) {
             if (sedes[i] != null) {
                 total++;
-            }
-        }
-
-        return total;
-    }
-
-    /**
-     * Cuenta partidos jugados.
-     */
-    private int contarPartidosJugados(Partido[] partidos) {
-        int total = 0;
-
-        if (partidos == null) {
-            return total;
-        }
-
-        for (int i = 0; i < partidos.length; i++) {
-            if (partidos[i] != null && partidos[i].isJugado()) {
-                total++;
-            }
-        }
-
-        return total;
-    }
-
-    /**
-     * Suma la asistencia de partidos jugados.
-     */
-    private int sumarAsistencia(Partido[] partidos) {
-        int total = 0;
-
-        if (partidos == null) {
-            return total;
-        }
-
-        for (int i = 0; i < partidos.length; i++) {
-            if (partidos[i] != null && partidos[i].isJugado()) {
-                total += partidos[i].getAsistencia();
-            }
-        }
-
-        return total;
-    }
-
-    /**
-     * Suma la recaudacion de partidos jugados.
-     */
-    private double sumarRecaudacion(Partido[] partidos) {
-        double total = 0;
-
-        if (partidos == null) {
-            return total;
-        }
-
-        for (int i = 0; i < partidos.length; i++) {
-            if (partidos[i] != null && partidos[i].isJugado()) {
-                total += partidos[i].getRecaudacion();
             }
         }
 
