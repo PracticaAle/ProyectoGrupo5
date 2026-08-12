@@ -711,12 +711,24 @@ public class InterfazMundial extends JFrame {
      * Genera el calendario de partidos de grupos.
      */
     private void generarCalendario() {
-        calendario = ModuloCalendario.generarCalendarioGrupos(grupos, sedes, arbitros);
+        
+        if (calendario != null) {
+            mostrarAviso("El calendario ya ha sido generado.");
+            return;
+        }
+
+        calendario = ModuloCalendario.generarCalendarioGrupos(
+                grupos,
+                sedes,
+                arbitros
+        );
+
         actualizarPanelEstado();
 
         if (calendario != null) {
             salida.setText(generarVistaPartidos());
         }
+        
     }
 
     /**
