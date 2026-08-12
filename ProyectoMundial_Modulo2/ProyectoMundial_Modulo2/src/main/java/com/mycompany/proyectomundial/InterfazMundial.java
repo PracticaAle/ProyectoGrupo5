@@ -873,7 +873,7 @@ public class InterfazMundial extends JFrame {
             return;
         }
 
-        ModuloEstadisticasFinales.mostrarResumenFinal(equipos, calendario);
+        
         salida.setText(generarResumenFinalTexto());
         actualizarPanelEstado();
     }
